@@ -1,191 +1,149 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
-<head> 
-  <meta charset="UTF-8"> 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-  <title>CREATION — The Midnight Library</title>  
-  <link rel="stylesheet" href="style.css"> 
-  <link rel="manifest" href="manifest.json"> 
-  <meta name="theme-color" content="#bfa46f"> 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Midnight Library</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="custom-cursor">
+<body data-theme="night" class="gate-closed">
 
-  <audio id="audio-page-turn" src="https://assets.mixkit.co/active_storage/sfx/211/211-preview.mp3" preload="auto"></audio> 
-  <audio id="audio-rain" src="https://assets.mixkit.co/active_storage/sfx/1230/1230-preview.mp3" loop preload="auto"></audio> 
-  <audio id="audio-ambient" src="https://assets.mixkit.co/active_storage/sfx/2458/2458-preview.mp3" loop preload="auto"></audio>
-
-  <div id="reading-progress"></div> 
-  <canvas id="universe"></canvas>
-  <canvas id="rain-canvas"></canvas> 
-  <div id="toast-container"></div> 
-  <button id="exit-focus-btn" class="exit-focus-btn" title="Exit Focus Mode">⨉ Exit Focus</button>
-
-  <header class="library-header">
-    <div class="header-left">
-      <span id="journal-date">Journal Entry: Loading...</span>
-      <span id="moon-phase" class="interactive-moon" title="Tap the Moon...">🌙</span>
-    </div>
-    <div class="header-right">
-      <button id="theme-toggle" class="btn-icon">🌙 Night</button>
-      <button id="rain-toggle" class="btn-icon">🌧️ Storm</button>
-      <button id="reading-mode-toggle" class="btn-icon">📖 Focus</button>
-      <button id="zen-mode-toggle" class="btn-icon">📜 Zen Mode</button>
-      <button id="open-fav-btn" class="btn-icon">❤️ Favs</button>
-      <button id="open-bookmarks-btn" class="btn-icon">🔖 Saved</button>
-      <button id="secret-admin-trigger" class="btn-icon">✍️ Desk</button>
-    </div>
-  </header>
-
-  <nav id="library-nav" class="library-nav"></nav>
-
-  <div id="admin-modal" class="modal" style="display:none;"> 
-    <div class="modal-content antique-parchment"> 
-      <div id="admin-auth-section"> 
-        <h3>ENTER SANCTUM KEY</h3> 
-        <input type="password" id="admin-pass-input" class="passport-input" placeholder="Scribe Password..."> 
-        <button id="btn-admin-login" class="btn-solid">VERIFY SEAL</button> 
-      </div> 
-      <div id="admin-form-section" style="display:none;"> 
-        <h3>AUTHOR'S DESK</h3> 
-        <input type="text" id="ap-chapter" class="passport-input" placeholder="CHAPTER (e.g. CHAPTER III)"> 
-        <input type="text" id="ap-spine" class="passport-input" placeholder="SPINE LABEL"> 
-        <input type="text" id="ap-title" class="passport-input" placeholder="POEM TITLE"> 
-        <input type="text" id="ap-subtitle" class="passport-input" placeholder="SUBTITLE"> 
-        <input type="text" id="ap-theme" class="passport-input" placeholder="THEME TAG"> 
-        <textarea id="ap-text" class="passport-input" placeholder="Write verses here..."></textarea> 
-        <input type="text" id="ap-date" class="passport-input" placeholder="DATE"> 
-        <input type="text" id="ap-sign" class="passport-input" placeholder="SIGNATURE"> 
-        <button id="btn-generate-json" class="btn-solid">GENERATE POEM STR</button> 
-      </div> 
-      <button id="btn-close-admin" class="btn-outline" style="margin-top:10px;">CLOSE DESK</button> 
-    </div> 
-  </div>
-
-  <div id="bookmarks-drawer" class="drawer"> 
-    <div class="drawer-header"> 
-      <h3>My Saved Echoes</h3> 
-      <button id="close-drawer" class="btn-icon">⨉</button> 
-    </div> 
-    <div id="bookmarks-list" class="drawer-content"></div> 
-  </div>
-
-  <div id="favourites-drawer" class="drawer"> 
-    <div class="drawer-header"> 
-      <h3>My Favourites ❤️</h3> 
-      <button id="close-fav-drawer" class="btn-icon">⨉</button> 
-    </div> 
-    <div id="favourites-list" class="drawer-content"></div> 
-  </div>
-
-  <div id="wish-modal" class="modal" style="display:none;"> 
-    <div class="modal-content antique-parchment dynamic-shadow"> 
-      <h3 class="moon-glow">11:11</h3> 
-      <p>Make a wish, dear wanderer...</p> 
-      <input type="text" id="wish-input" class="passport-input" placeholder="Whisper your wish here..." autocomplete="off"> 
-      <button id="submit-wish-btn" class="btn-solid">Whisper to the Universe</button> 
-    </div> 
-  </div>
-
-  <div id="intro-screen"> 
-    <div class="intro-content"> 
-      <h1 class="intro-title moon-glow">CREATION</h1> 
-      <div class="intro-line"></div>  
-      <div class="intro-prose"> 
-        <p>CREATION is a digital sanctuary crafted by Soham Madan Jadhao — a space where thoughts, emotions, memories, and poems find their eternal rest.</p> 
-        <p class="intro-highlight">Enter when you are ready to listen.</p> 
-      </div> 
-      <div style="display:flex; flex-direction:column; gap:15px; margin-top:20px; align-items:center; width:100%; max-width:300px;"> 
-        <input type="text" id="visitor-name" class="passport-input" placeholder="Enter your name, Wanderer...">
-        <button id="enter-library-btn" class="btn-solid" style="width:100%;">ENTER THE LIBRARY</button> 
-        <button id="btn-install-app" class="btn-outline" style="display:none; width:100%;">Install Sanctuary App</button> 
-      </div> 
-    </div> 
-  </div>
-
-  <main class="content">
-
-    <section id="page1" class="page active">
-      <h2 class="page1-heading moon-glow">THE ARCHIVES</h2>
-      <div class="intro-line"></div>
-      
-      <div class="bookshelf-container">
-        <div id="dynamic-bookshelf" class="bookshelf-row"></div>
-        <div class="shelf-wood"></div>
-      </div>
-
-      <div style="position:relative; width:100%; height:200px; margin: 20px 0; border:1px solid rgba(191,164,111,0.1); border-radius:8px; overflow:hidden;">
-        <div style="position:absolute; width:100%; text-align:center; top:10px; font-family:'Cinzel'; font-size:11px; letter-spacing:2px; color:var(--gold);">CONSTELLATION NAVIGATOR</div>
-        <div id="star-map" style="width:100%; height:100%; position:relative;"></div>
-      </div>
-
-      <p id="midnight-thought-display" style="font-family:'Cormorant Garamond'; font-style:italic; min-height:40px; margin-top:20px; opacity:0.7;">"The moon has seen every version of you."</p>
-      <button id="reveal-thought-btn" class="btn-utility">Draw a Midnight Thought</button>
-
-      <div class="button-row" style="margin-top:40px;">
-        <button id="btn-explore" class="btn-solid trigger-nav" data-target="poem-page-1">Pull Open First Chapter ❯</button>
-      </div>
-    </section>
-
-    <section id="page-fragments" class="page">
-      <span class="chapter-badge" style="color:var(--gold); font-family:'Cinzel'; font-size:11px;">ROOM OF ECHOES</span>
-      <h2 class="page1-heading moon-glow">FRAGMENTS</h2>
-      <div class="intro-line"></div>
-      <div class="antique-parchment dynamic-shadow">
-        <p id="combo-quote-1" style="font-family:'Playfair Display'; font-style:italic; margin-bottom:15px;"></p>
-        <p id="combo-quote-2" style="font-family:'Playfair Display'; font-style:italic; margin-bottom:15px;"></p>
-        <p id="combo-quote-3" style="font-family:'Playfair Display'; font-style:italic;"></p>
-      </div>
-      <div class="button-row">
-        <button id="btn-frag-prev" class="btn-outline trigger-nav">❮ Previous Chapter</button>
-        <button class="btn-solid trigger-nav" data-target="page-archive">Step to Vault ❯</button>
-      </div>
-    </section>
-
-    <section id="page-archive" class="page">
-      <h2 class="page1-heading moon-glow">THE LEDGER</h2>
-      <p style="font-family:'Cinzel'; font-size:12px; color:var(--gold); margin:10px 0;" id="vault-greeting">Welcome to the Secret Vault.</p>
-      <div class="antique-parchment dynamic-shadow">
-        <div id="ledger-list" style="max-height:200px; overflow-y:auto; text-align:left; font-family:'Cormorant Garamond'; margin-bottom:20px; padding-right:10px;"></div>
-        <input type="text" class="passport-input ledger-input" placeholder="Sign your footprint into time..." style="width:100%; margin-bottom:10px;">
-        <button class="btn-solid ledger-submit" style="width:100%;">Etch Signature</button>
-      </div>
-      <div class="button-row">
-        <button class="btn-outline trigger-nav" data-target="page-fragments">❮ Back to Notes</button>
-        <button class="btn-solid trigger-nav" data-target="page-about">Author's Chamber ❯</button>
-      </div>
-    </section>
-
-    <section id="page-about" class="page">
-      <h2 class="page1-heading moon-glow" id="reader-letter-title">A LETTER TO WANDERER</h2>
-      <div class="antique-parchment dynamic-shadow" style="text-align:left; font-family:'Cormorant Garamond'; font-size:18px; line-height:1.7;">
-        <p style="margin-bottom:15px;">You have successfully wandered into the deep recesses of the Midnight Library. This platform forms a structural timeline processing digital aesthetics, calculations, patterns, and verses into single framework units.</p>
-        <p style="margin-bottom:25px; font-weight:bold; color:var(--gold);" id="author-scripting-status">Currently Scripting: Loading...</p>
-        <div style="border-top:1px dashed var(--gold); padding-top:20px; text-align:center;">
-          <h4 style="font-family:'Cinzel'; color:var(--gold); margin-bottom:10px;">🕒 TIME CAPSULE</h4>
-          <p id="capsule-status" style="font-size:14px; font-style:italic;"></p>
+    <main id="screen-entrance" class="gatekeeper-panel">
+        <h1 class="main-title">CREATION</h1>
+        
+        <div class="intro-container">
+            <p class="intro-paragraph">
+                "CREATION is a digital sanctuary crafted by Soham Madan Jadhao — a space where thoughts, emotions, memories, and imagination find their voice through words."
+            </p>
+            <p class="intro-subtext">
+                This library was created to explore the beauty of creativity in its many forms. Here, every poem, note, and fragment stands as a reminder that even the simplest moments can inspire something.
+            </p>
         </div>
-      </div>
-      <div class="button-row">
-        <button class="btn-solid trigger-nav" data-target="page1">↩ Return to Main Portal</button>
-      </div>
-    </section>
 
-    <section id="page-secret" class="page">
-      <h2 class="page1-heading moon-glow" style="color:crimson;">SANCTUM SECRETUM</h2>
-      <div class="antique-parchment" style="background:#090000; border-color:crimson;">
-        <p style="font-family:'Cinzel'; font-size:18px; color:crimson; margin-bottom:15px;">Congratulations. You have cracked open the system code.</p>
-        <p style="font-family:'Playfair Display'; color:#999; font-size:16px;">"Silence is not the absence of sound, but the presence of clear architectural alignment."</p>
-      </div>
-      <button class="btn-outline trigger-nav" data-target="page1" style="color:crimson; border-color:crimson;">Leave Shadow Space</button>
-    </section>
+        <div class="author-signature-block">
+            <div class="author-name">Soham</div>
+            <div class="moon-silence-tag">moon : silence</div>
+        </div>
 
-  </main>
+        <button class="gate-button" onclick="unlockTheGates()">Open The Gates</button>
+    </main>
 
-  <footer class="library-footer" style="position:fixed; bottom:0; left:0; width:100%; text-align:center; padding:15px; font-size:11px; color:var(--text-muted); background:linear-gradient(to top, var(--bg-base), transparent); pointer-events:none; z-index:10;">
-    <span id="quote-rotator">"Every silence contains a poem."</span>
-  </footer>
 
-  <script src="script.js"></script>
+    <div id="main-sanctuary-content" class="sanctuary-hidden-wrapper">
+        
+        <header class="top-utility-bar">
+            <div class="moon-phase-display">
+                🌙 Waxing Gibbous
+            </div>
+            
+            <div class="quick-tags-grid">
+                <button class="utility-btn">❤️ Favourites</button>
+                <button class="utility-btn">🌧️ Rain</button>
+                <button class="utility-btn">🔖 Archives</button>
+            </div>
+
+            <div class="theme-toggle-row">
+                <button class="utility-btn" id="dayToggle">☀️ Day</button>
+                <button class="utility-btn active" id="nightToggle">🌙 Night</button>
+            </div>
+        </header>
+
+        <main id="screen-creation" class="sanctuary-page active-screen">
+            <div class="section-header-quote">
+                <h2>CREATION</h2>
+                <p>"In the silence of creation, the soul discovers itself."</p>
+                <p class="header-author">— Soham Madan Jadhao</p>
+            </div>
+
+            <article class="antique-parchment-card">
+                <div class="poem-verse-block">
+                    Time moves softly, like a river<br>carrying memories<br>downstream.
+                </div>
+                
+                <div class="card-divider-star">
+                    <span>✦</span>
+                </div>
+
+                <div class="poem-verse-block">
+                    Along its banks, Soham leaves<br>behind his self-composed<br>verses—each poem a footprint
+                </div>
+
+                <div class="poem-verse-block highlight-verse">
+                    of a feeling, each stanza a<br>witness to a fleeting moment.
+                </div>
+
+                <div class="poem-verse-block">
+                    This space shall grow with time<br>itself, gathering words the way<br>the night gathers stars.
+                </div>
+
+                <div class="reveal-thought-container">
+                    <button class="reveal-thought-btn">✨ Reveal a Midnight Thought</button>
+                </div>
+            </article>
+        </main>
+
+        <main id="screen-chapter1" class="sanctuary-page">
+            <div class="chapter-title-unit">
+                <div class="chapter-number">Chapter I</div>
+                <h2 class="chapter-heading">ANCHOR</h2>
+                <div class="chapter-subheading">A Tribute to My Father</div>
+            </div>
+
+            <div class="poem-metadata-row">
+                <div class="meta-pill-tag">❤️ Family & Love</div>
+                <div class="meta-pill-tag">⏱️ 1 Min Read</div>
+                <a class="meta-action-link">🔖 Bookmark</a>
+            </div>
+
+            <div class="wax-seal-wrapper">
+                <div class="wax-seal-hint">👇 Click the wax seal to break it...</div>
+                <div class="realistic-3d-wax-seal" id="waxSeal">
+                    <span>SJ</span>
+                </div>
+            </div>
+        </main>
+
+        <main id="screen-notes" class="sanctuary-page">
+            <div class="notes-room-display">
+                <h3>Raw Silent Fragments</h3>
+                
+                <div class="quotes-stack">
+                    <div class="isolated-quote-card">
+                        "The hardest goodbyes are the ones that happen quietly."
+                    </div>
+                    <div class="isolated-quote-card">
+                        "Some people become memories before they leave."
+                    </div>
+                    <div class="isolated-quote-card">
+                        "Happiness often arrives disguised as ordinary moments."
+                    </div>
+                </div>
+            </div>
+
+            <section class="visitor-ledger-isolated-zone">
+                <div class="ledger-title">🕯️ The Visitor Ledger</div>
+                <div class="ledger-status">No wandering souls have left a mark yet...</div>
+                <div class="ledger-input-wrapper">
+                    <input type="text" class="ledger-field" placeholder="Leave your mark here... 🖋️">
+                </div>
+            </section>
+        </main>
+
+        <footer class="fixed-bottom-dock">
+            <nav class="capsule-slider-track">
+                <div class="slider-nav-node active-node" onclick="navigateTo('screen-creation')">Creation</div>
+                <div class="slider-nav-node" onclick="navigateTo('screen-chapter1')">Chapter I</div>
+                <div class="slider-nav-node" onclick="navigateTo('screen-notes')">Notes Room</div>
+            </nav>
+            
+            <div class="global-footer-credits">
+                The Midnight Library · © Copyright · All Rights Reserved · 2026 · Fluid & Antilag · Completely Created by Soham Madan Jadhao
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
