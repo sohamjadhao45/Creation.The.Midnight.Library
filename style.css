@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Urbanist:wght@200;400;600&display=swap');
+
+:root {
+    --bg-base: #050507; --text-primary: #f2eee9; --text-muted: rgba(242, 238, 233, 0.6);
+    --gold: #bfa46f; --gold-glow: rgba(191, 164, 111, 0.25);
+    --parchment-bg: #151515; --parchment-text: #e0e0e0;
+    --parchment-shadow: inset 0 0 50px rgba(0,0,0,1), inset 0 0 15px rgba(20,20,20,0.8), var(--shadow-x, 0px) var(--shadow-y, 15px) 35px rgba(0,0,0,0.9);
+    --parchment-border: rgba(255, 255, 255, 0.08); --parchment-dropcap: #bfa46f;
+    --seal-overlay: rgba(15,15,15,0.95);
+}
+
+[data-theme="light"] {
+    --bg-base: #f4ebd0; --text-primary: #1c160c; --text-muted: rgba(28, 22, 12, 0.7);
+    --gold: #896d38; --gold-glow: rgba(137, 109, 56, 0.2);
+    --parchment-bg: #e8dcc7; --parchment-text: #3B2210; 
+    --parchment-shadow: inset 0 0 60px rgba(139, 90, 43, 0.5), inset 0 0 20px rgba(74, 44, 17, 0.4), var(--shadow-x, 0px) var(--shadow-y, 15px) 35px rgba(0,0,0,0.3);
+    --parchment-border: rgba(59, 35, 19, 0.3); --parchment-dropcap: #2b1406;
+    --seal-overlay: rgba(232, 220, 199, 0.95);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { width: 100%; min-height: 100%; background-color: var(--bg-base); color: var(--text-primary); font-family: 'Urbanist', sans-serif; font-weight: 200; overflow-x: hidden; transition: background-color 0.8s ease; }
+
+/* Interactive Ripple */
+.touch-ripple { position: fixed; width: 20px; height: 20px; background: radial-gradient(circle, var(--gold) 0%, transparent 70%); border-radius: 50%; transform: translate(-50%, -50%) scale(0); animation: rippleAnim 0.8s ease-out forwards; pointer-events: none; z-index: 999999; }
+@keyframes rippleAnim { to { transform: translate(-50%, -50%) scale(6); opacity: 0; } }
+
+/* Framework Layout Mechanics */
+#reading-progress { position: fixed; top: 0; left: 0; height: 4px; background: var(--gold); box-shadow: 0 0 15px var(--gold); width: 0%; z-index: 9999999; }
+#universe, #rain-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+#rain-canvas { opacity: 0; transition: opacity 2s ease; }
+#rain-canvas.raining { opacity: 0.6; }
+
+/* Focus / Reading Structural State */
+body.reading-mode #universe, body.reading-mode .library-nav, body.reading-mode .library-header, body.reading-mode .library-footer { filter: blur(15px) opacity(0.1); pointer-events: none; }
+.exit-focus-btn { position: fixed; top: 20px; right: 20px; z-index: 99999; background: rgba(0,0,0,0.8); color: var(--gold); border: 1px solid var(--gold); padding: 8px 16px; font-family: 'Cinzel'; display: none; cursor: pointer; }
+body.reading-mode .exit-focus-btn { display: block; }
+
+/* Drawer Architectures */
+.drawer { position: fixed; bottom: -100%; left: 0; width: 100%; height: 50vh; background: var(--bg-base); z-index: 99999; border-top: 2px solid var(--gold); border-radius: 20px 20px 0 0; transition: bottom 0.5s cubic-bezier(0.25, 1, 0.5, 1); padding: 20px; }
+.drawer.open { bottom: 0; }
+.drawer-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(191,164,111,0.2); padding-bottom: 10px; margin-bottom: 15px; }
+.drawer-header h3 { font-family: 'Cinzel'; color: var(--gold); }
+.drawer-content { overflow-y: auto; height: calc(100% - 50px); }
+.bookmark-item { padding: 12px; border: 1px solid rgba(191,164,111,0.2); margin-bottom: 8px; border-radius: 4px; font-family: 'Cinzel'; color: var(--gold); cursor: pointer; }
+
+/* Intro Passport Gateway */
+#intro-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #020203; z-index: 100000; display: flex; align-items: center; justify-content: center; transition: opacity 1.2s ease; }
+#intro-screen.fade-out { opacity: 0; pointer-events: none; }
+.intro-content { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px; width: 100%; }
+.intro-title { font-family: 'Cinzel'; font-size: clamp(2.5rem, 7vw, 5.5rem); color: var(--gold); letter-spacing: 12px; }
+.intro-line { width: 200px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 15px 0; }
+.intro-prose { max-width: 550px; font-family: 'Cormorant Garamond'; font-size: 16px; line-height: 1.6; color: #aaa; margin-bottom: 20px; }
+.intro-highlight { font-style: italic; color: var(--gold); margin-top: 10px; }
+.passport-input { background: transparent; border: none; border-bottom: 1px solid rgba(191,164,111,0.4); color: var(--gold); font-family: 'Cinzel'; font-size: 14px; text-align: center; padding: 8px; outline: none; margin-bottom: 15px; }
+
+/* Control Header & Nav Mechanics */
+.library-header { position: fixed; top: 0; left: 0; width: 100%; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; padding: 15px 20px; z-index: 1000; background: linear-gradient(to bottom, var(--bg-base) 70%, transparent); }
+.header-left { display: flex; gap: 15px; align-items: center; font-family: 'Cinzel'; font-size: 11px; color: var(--text-muted); }
+.header-right { display: flex; gap: 6px; flex-wrap: wrap; }
+.btn-icon { background: rgba(0,0,0,0.4); border: 1px solid rgba(191,164,111,0.2); color: var(--text-primary); padding: 5px 10px; cursor: pointer; font-family: 'Cinzel'; font-size: 10px; }
+
+.library-nav { position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; gap: 6px; background: rgba(10, 10, 15, 0.85); padding: 5px; border-radius: 30px; backdrop-filter: blur(15px); border: 1px solid rgba(191,164,111,0.2); max-width: 95vw; overflow-x: auto; }
+.library-nav::-webkit-scrollbar { display: none; }
+.nav-link { background: transparent; border: none; color: var(--text-muted); padding: 6px 14px; font-family: 'Cinzel'; font-size: 10px; cursor: pointer; border-radius: 20px; white-space: nowrap; transition: all 0.3s; }
+.nav-link.active-nav, .nav-link:hover { color: #000 !important; background: var(--gold); }
+
+/* Main Dynamic Pipeline Containers */
+.content { position: relative; z-index: 2; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 120px 20px 120px; width: 100%; }
+.page { display: none; flex-direction: column; align-items: center; width: min(800px, 100%); text-align: center; }
+.page.active { display: flex; animation: vortexPass 0.7s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+@keyframes vortexPass { 0% { opacity: 0; transform: scale(0.96) rotate(-0.5deg); filter: blur(4px); } 100% { opacity: 1; transform: scale(1) rotate(0deg); filter: blur(0); } }
+
+.page1-heading { font-family: 'Cinzel'; color: var(--gold); letter-spacing: 6px; font-size: clamp(1.8rem, 4vw, 3.5rem); }
+
+/* Parchment Rendering Frame */
+.antique-parchment {
+    width: 100%; margin: 25px 0; padding: 50px 30px;
+    background-color: var(--parchment-bg);
+    background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png');
+    border-radius: 8px; box-shadow: var(--parchment-shadow); border: 1px solid var(--parchment-border);
+    position: relative; overflow: hidden;
+}
+
+/* Wax Seal Interaction Subsystem */
+.wax-seal-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--seal-overlay); z-index: 50; display: flex; align-items: center; justify-content: center; transition: all 0.6s ease; }
+.wax-seal { width: 65px; height: 65px; background: #8b0000; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.6); position: relative; }
+.seal-ring { width: 50px; height: 50px; border: 2px dashed rgba(255,255,255,0.15); border-radius: 50%; position: absolute; }
+.seal-letter { font-family: 'Cinzel'; font-size: 26px; color: rgba(255,255,255,0.7); pointer-events: none; }
+.wax-seal-wrapper.broken { opacity: 0; visibility: hidden; pointer-events: none; transform: scale(1.05); }
+
+/* Typography Rules */
+.royal-poem-text { font-family: 'Playfair Display', serif; font-size: clamp(16px, 2vw, 20px); line-height: 1.85; color: var(--parchment-text); white-space: pre-wrap; text-align: center; }
+.drop-cap-antique { font-family: 'Cinzel'; font-size: 240%; float: left; line-height: 0.9; padding-right: 6px; color: var(--parchment-dropcap); font-weight: bold; }
+.poem-date { font-family: 'Cinzel'; font-size: 11px; color: var(--gold); margin-top: 20px; opacity: 0.8; }
+.sign-animate { font-family: 'Great Vibes', cursive; font-size: clamp(24px, 3.5vw, 34px); color: var(--gold); margin-top: 10px; display: block; opacity: 0; transform: translateY(10px); transition: all 1s ease; }
+.sign-animate.active-sign, .sign-animate.show-instantly { opacity: 1; transform: translateY(0); }
+
+/* Whisper Meaning Morph Mechanics */
+.whisper-word { border-bottom: 1px dotted var(--gold); cursor: pointer; color: var(--gold); transition: all 0.3s ease; }
+.whisper-word.whispered { color: #cf4a4a; border-bottom-color: #cf4a4a; font-style: italic; }
+
+/* Bookshelf Visual Generation Core */
+.bookshelf-container { width: min(550px, 100%); margin: 30px auto; }
+.bookshelf-row { display: flex; justify-content: center; align-items: flex-end; gap: 10px; height: 200px; }
+.book-spine { width: 45px; height: 170px; background: linear-gradient(90deg, #3a1010, #5c1e1e, #260a0a); border-radius: 4px 4px 0 0; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; box-shadow: 2px -2px 5px rgba(0,0,0,0.4); }
+.book-spine.spine-gold { background: linear-gradient(90deg, #4f3b1a, #7d602d, #382912); }
+.book-spine.spine-locked { background: linear-gradient(90deg, #1e2022, #313335, #111213); opacity: 0.4; cursor: not-allowed; }
+.spine-text { transform: rotate(-90deg); white-space: nowrap; font-family: 'Cinzel'; font-size: 9px; color: #dfc89e; pointer-events: none; }
+.shelf-wood { width: 100%; height: 14px; background: linear-gradient(to bottom, #4a3718, #0f0904); border-radius: 2px; }
+.book-spine:not(.spine-locked):hover { transform: translateY(-12px) scale(1.02); }
+
+/* Star Map Node Constellation */
+.star-node { position: absolute; width: 6px; height: 6px; background: #fff; border-radius: 50%; cursor: pointer; transform: translate(-50%, -50%); box-shadow: 0 0 8px #fff; transition: all 0.3s; z-index: 5; }
+.star-node:hover { background: var(--gold); box-shadow: 0 0 14px var(--gold); transform: translate(-50%, -50%) scale(1.5); }
+
+/* Global Buttons & UI Modals */
+.button-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 15px; }
+button:not(.nav-link):not(.btn-icon):not(.exit-focus-btn) { cursor: pointer; padding: 10px 20px; font-family: 'Cinzel'; font-size: 11px; letter-spacing: 1px; transition: all 0.3s; border: none; border-radius: 3px; }
+.btn-solid { background: var(--gold); color: #050507; font-weight: 600; }
+.btn-outline { background: transparent; color: var(--gold); border: 1px solid var(--gold); }
+.btn-utility { background: rgba(255,255,255,0.04); color: var(--gold); border: 1px solid rgba(191,164,111,0.25); padding: 5px 10px !important; font-size: 10px !important; }
+
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 200000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); }
+.modal-content { max-width: 450px; width: 90%; text-align: center; }
+
+#toast-container { position: fixed; bottom: 100px; right: 20px; z-index: 9000000; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast { background: var(--gold); color: #000; font-family: 'Cinzel'; font-size: 11px; font-weight: bold; padding: 10px 18px; border-radius: 3px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); animation: toastIn 0.3s ease forwards; }
+@keyframes toastIn { from { transform: translateY(15px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.moon-glow { text-shadow: 0 0 12px var(--gold); }
